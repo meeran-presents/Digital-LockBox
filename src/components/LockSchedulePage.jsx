@@ -8,10 +8,11 @@ export default function LockSchedulePage({ schedules, setSchedules }) {
   const [title, setTitle] = useState('');
   const [startHour, setStartHour] = useState(9);
   const [startMinute, setStartMinute] = useState(0);
-  const [endHour, setEndHour] = useState(10);
+  const [endHour, setEndHour] = useState(9);
   const [endMinute, setEndMinute] = useState(30);
   const [selectedDays, setSelectedDays] = useState([1, 3]); // Mon, Wed default
   const [colorTheme, setColorTheme] = useState('teal');
+  const [validationError, setValidationError] = useState('');
 
   const daysOfWeek = [
     { label: 'S', value: 0, fullName: 'Sunday' },
@@ -60,6 +61,21 @@ export default function LockSchedulePage({ schedules, setSchedules }) {
     if (!title.trim()) return alert("Please enter a title");
     if (selectedDays.length === 0) return alert("Select at least one day");
 
+    // Calculate duration in minutes
+    const startTotal = parseInt(startHour) * 60 + parseInt(startMinute);
+    const endTotal = parseInt(endHour) * 60 + parseInt(endMinute);
+    let duration = endTotal - startTotal;
+    if (duration <= 0) {
+      duration += 24 * 60; // Spans overnight
+    }
+
+    if (duration < 30) {
+      setValidationError("Minimum lock duration is 30 minutes.");
+      return;
+    }
+
+    setValidationError("");
+
     const newSchedule = {
       id: Date.now(),
       title,
@@ -77,6 +93,10 @@ export default function LockSchedulePage({ schedules, setSchedules }) {
     // Reset Form
     setTitle('');
     setSelectedDays([1, 3]);
+    setStartHour(9);
+    setStartMinute(0);
+    setEndHour(9);
+    setEndMinute(30);
     setIsAdding(false);
   };
 
@@ -276,29 +296,61 @@ export default function LockSchedulePage({ schedules, setSchedules }) {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Start Time</label>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1">
                   <select 
                     value={startHour} 
-                    onChange={(e) => setStartHour(parseInt(e.target.value))}
-                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-300 w-full"
+                    onChange={(e) => {
+                      setStartHour(parseInt(e.target.value));
+                      setValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-300 w-1/2 focus:outline-none"
                   >
                     {Array.from({ length: 24 }).map((_, h) => (
-                      <option key={h} value={h}>{h < 10 ? `0${h}` : h}:00</option>
+                      <option key={h} value={h}>{h < 10 ? `0${h}` : h}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={startMinute} 
+                    onChange={(e) => {
+                      setStartMinute(parseInt(e.target.value));
+                      setValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-300 w-1/2 focus:outline-none"
+                  >
+                    {[0, 15, 30, 45].map((m) => (
+                      <option key={m} value={m}>{m < 10 ? `0${m}` : m}</option>
                     ))}
                   </select>
                 </div>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">End Time</label>
-                <select 
-                  value={endHour} 
-                  onChange={(e) => setEndHour(parseInt(e.target.value))}
-                  className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-300 w-full"
-                >
-                  {Array.from({ length: 24 }).map((_, h) => (
-                    <option key={h} value={h}>{h < 10 ? `0${h}` : h}:00</option>
-                  ))}
-                </select>
+                <div className="flex gap-1">
+                  <select 
+                    value={endHour} 
+                    onChange={(e) => {
+                      setEndHour(parseInt(e.target.value));
+                      setValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-300 w-1/2 focus:outline-none"
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => (
+                      <option key={h} value={h}>{h < 10 ? `0${h}` : h}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={endMinute} 
+                    onChange={(e) => {
+                      setEndMinute(parseInt(e.target.value));
+                      setValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-300 w-1/2 focus:outline-none"
+                  >
+                    {[0, 15, 30, 45].map((m) => (
+                      <option key={m} value={m}>{m < 10 ? `0${m}` : m}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -346,6 +398,13 @@ export default function LockSchedulePage({ schedules, setSchedules }) {
                 ))}
               </div>
             </div>
+
+            {/* Validation Error Banner */}
+            {validationError && (
+              <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-wider text-center animate-pulse">
+                ⚠️ {validationError}
+              </div>
+            )}
 
             {/* Submit */}
             <button

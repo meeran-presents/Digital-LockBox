@@ -5,13 +5,16 @@ import AnalyticsPage from './components/AnalyticsPage';
 import Leaderboard from './components/Leaderboard';
 import LockSchedulePage from './components/LockSchedulePage';
 import NudgesFeed from './components/NudgesFeed';
-import { initialDashboardData, initialSchedules, initialNudges } from './mockData';
+import RewardsPage from './components/RewardsPage';
+import { initialDashboardData, initialSchedules, initialNudges, initialRewards } from './mockData';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home');
   const [dashboardData, setDashboardData] = useState(initialDashboardData);
   const [schedules, setSchedules] = useState(initialSchedules);
   const [nudges, setNudges] = useState(initialNudges);
+  const [rewards, setRewards] = useState(initialRewards);
+  const [points, setPoints] = useState(420);
 
   // Dynamically render active tab content
   const renderContent = () => {
@@ -33,6 +36,14 @@ export default function App() {
           <LockSchedulePage 
             schedules={schedules} 
             setSchedules={setSchedules} 
+          />
+        );
+      case 'rewards':
+        return (
+          <RewardsPage 
+            rewards={rewards} 
+            setRewards={setRewards} 
+            points={points} 
           />
         );
       case 'nudges':

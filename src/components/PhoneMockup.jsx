@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, BarChart2, Trophy, Calendar, Bell, Wifi, Battery, Signal } from 'lucide-react';
+import { Home, BarChart2, Trophy, Calendar, Bell, Gift, Wifi, Battery, Signal } from 'lucide-react';
 
 export default function PhoneMockup({ currentTab, setCurrentTab, children, notificationCount }) {
   const [time, setTime] = useState("");
@@ -25,6 +25,7 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
     { id: 'analytics', label: 'Stats', icon: BarChart2 },
     { id: 'leaderboard', label: 'Rank', icon: Trophy },
     { id: 'schedule', label: 'Lock', icon: Calendar },
+    { id: 'rewards', label: 'Rewards', icon: Gift },
     { id: 'nudges', label: 'Alerts', icon: Bell, badge: notificationCount },
   ];
 
@@ -60,7 +61,7 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
         </div>
 
         {/* Premium Glassmorphic Bottom Navigation Bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-[84px] bg-[#090b11]/80 backdrop-blur-xl border-t border-slate-800/60 px-4 pt-2 pb-6 flex justify-around items-center z-40">
+        <div className="absolute bottom-0 left-0 right-0 h-[84px] bg-[#090b11]/80 backdrop-blur-xl border-t border-slate-800/60 px-1 pt-2 pb-6 flex justify-between items-center z-40">
           {navItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = currentTab === item.id;
@@ -68,7 +69,7 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
               <button
                 key={item.id}
                 onClick={() => setCurrentTab(item.id)}
-                className={`relative flex flex-col items-center justify-center w-14 h-12 rounded-xl transition-all duration-300 ${
+                className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 ${
                   isActive 
                     ? 'text-teal-400 scale-105' 
                     : 'text-slate-500 hover:text-slate-300'
@@ -77,20 +78,20 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
                 <div className={`p-1 rounded-lg transition-colors ${
                   isActive ? 'bg-teal-500/10 text-teal-400' : 'bg-transparent'
                 }`}>
-                  <IconComponent size={20} strokeWidth={isActive ? 2.2 : 1.8} />
+                  <IconComponent size={18} strokeWidth={isActive ? 2.2 : 1.8} />
                 </div>
-                <span className="text-[9px] font-medium mt-1 tracking-wider">{item.label}</span>
+                <span className="text-[8px] font-semibold mt-0.5 tracking-tight">{item.label}</span>
                 
                 {/* Notification/Alert Badge */}
                 {item.badge > 0 && (
-                  <span className="absolute top-1.5 right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-4 h-4 flex items-center justify-center shadow-lg border border-[#090b11]">
+                  <span className="absolute top-1 right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[8px] font-extrabold px-1 rounded-full min-w-3.5 h-3.5 flex items-center justify-center shadow-lg border border-[#090b11]">
                     {item.badge}
                   </span>
                 )}
                 
                 {/* Active Indicator Bar */}
                 {isActive && (
-                  <span className="absolute -bottom-1 w-5 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full glow-teal"></span>
+                  <span className="absolute -bottom-1 w-4 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full glow-teal"></span>
                 )}
               </button>
             );

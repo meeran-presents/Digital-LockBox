@@ -42,6 +42,9 @@ export default function DashboardHome({ data, setData, onNavigate }) {
   }, [activeTimer, lockMinutes, setData]);
 
   const handleStartLock = () => {
+    if (lockMinutes < 30) {
+      return; // Validation blocks starting
+    }
     setIsLocking(false);
     setActiveTimer(true);
     setTimeRemaining(lockMinutes * 60);
@@ -300,11 +303,23 @@ export default function DashboardHome({ data, setData, onNavigate }) {
               />
             </div>
 
+            {/* Validation Error Alert */}
+            {lockMinutes < 30 && (
+              <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10.5px] font-bold uppercase tracking-wider text-center animate-pulse">
+                ⚠️ Minimum lock duration is 30 minutes.
+              </div>
+            )}
+
             <button
               onClick={handleStartLock}
-              className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-teal-500/20"
+              disabled={lockMinutes < 30}
+              className={`w-full py-3.5 mt-1.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all ${
+                lockMinutes < 30
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+                  : 'bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 hover:shadow-teal-500/20'
+              }`}
             >
-              <Play size={14} fill="currentColor" />
+              <Play size={14} fill="currentColor" className={lockMinutes < 30 ? 'opacity-30' : ''} />
               <span>Lock Now for {lockMinutes} Min</span>
             </button>
           </div>
