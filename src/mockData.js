@@ -2,7 +2,7 @@ export const initialDashboardData = {
   todayStreak: 270, // 4 hours 30 mins, in minutes
   dailyGoal: 480,    // 8 hours, in minutes
   totalUnlocks: 2,
-  nudgeMessage: "Great job! You're 30 min away from your goal.",
+  nudgeMessage: "Device Locked // Stay focused on your goals.",
 };
 
 export const analyticsStats = {
@@ -88,72 +88,18 @@ export const initialSchedules = [
   },
 ];
 
-export const initialNudges = [
+export const initialSecurityLogs = [
   {
     id: 1,
-    type: "stats",
-    title: "Screen Time Report",
-    message: "You have used 1h 45min of phone screen time today. High lock periods are helping your concentration!",
-    time: "10 mins ago",
-    badge: "Info",
-    badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  },
-  {
-    id: 2,
-    type: "milestone",
-    title: "Detox Streak Milestone",
-    message: "3-day streak achieved! You have accumulated over 18 hours of dedicated lockbox time.",
-    time: "2 hours ago",
-    badge: "Milestone",
-    badgeColor: "bg-teal-500/10 text-teal-400 border-teal-500/20",
-  },
-  {
-    id: 3,
-    type: "predictive",
-    title: "Academic Projections",
-    message: "Your current lockbox utilization estimates a GPA improvement of +0.3 based on academic study correlations.",
-    time: "5 hours ago",
-    badge: "Pro",
-    badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-  },
-  {
-    id: 4,
-    type: "alert",
-    title: "Schedule Approaching",
-    message: "A scheduled locking period 'Deep Sleep Lock' (10:00 PM - 06:00 AM) begins in 1 hour.",
-    time: "8 hours ago",
-    badge: "Schedule",
-    badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  },
-  {
-    id: 5,
-    type: "tip",
-    title: "Concentration Booster",
-    message: "Detoxing during lectures is shown to raise average quiz scores by 12-15%. Keep it up!",
-    time: "1 day ago",
-    badge: "AI Tip",
-    badgeColor: "bg-pink-500/10 text-pink-400 border-pink-500/20",
-  },
-  {
-    id: 6,
-    type: "milestone",
-    title: "Hostel Leaderboard Update",
-    message: "Awesome work! You moved up to Rank #3 in Ramanujan Hall after yesterday's 9.5-hour lock session.",
-    time: "1 day ago",
-    badge: "Hostel Rank",
-    badgeColor: "bg-teal-500/10 text-teal-400 border-teal-500/20",
-  },
-  {
-    id: 7,
     type: "security",
     title: "Tamper Detected",
     message: "⚠️ Tamper Detected: Box forced open at 11:42 PM",
-    time: "1 hour ago",
+    time: "2 hours ago",
     badge: "Tamper",
     badgeColor: "bg-red-500/10 text-red-400 border-red-500/20",
   },
   {
-    id: 8,
+    id: 2,
     type: "security",
     title: "Emergency Button Pressed",
     message: "🚨 Emergency Button Pressed - lock override accessed",
@@ -162,7 +108,7 @@ export const initialNudges = [
     badgeColor: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   },
   {
-    id: 9,
+    id: 3,
     type: "security",
     title: "Unauthorized Access",
     message: "📱 Device accessed without lockbox scheduled release approval",
@@ -219,4 +165,3 @@ export const initialRewards = [
     icon: "☕",
   },
 ];
-

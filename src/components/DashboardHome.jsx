@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Lock, Unlock, Zap, ChevronRight, Play, X, Battery, Wifi } from 'lucide-react';
+import { Flame, Lock, Unlock, Zap, ChevronRight, Play, X, Battery, Wifi, Calendar, Plus, Trash2, Clock, ToggleLeft, ToggleRight } from 'lucide-react';
 
-export default function DashboardHome({ data, setData, onNavigate }) {
+export default function DashboardHome({ data, setData, schedules, setSchedules }) {
+  // Quick Lock box state
   const [isLocking, setIsLocking] = useState(false);
   const [lockMinutes, setLockMinutes] = useState(30);
   const [activeTimer, setActiveTimer] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
+
+  // Add Lock Schedule form state
+  const [isAddingSchedule, setIsAddingSchedule] = useState(false);
+  const [schedTitle, setSchedTitle] = useState('');
+  const [schedStartHour, setSchedStartHour] = useState(9);
+  const [schedStartMinute, setSchedStartMinute] = useState(0);
+  const [schedEndHour, setSchedEndHour] = useState(9);
+  const [schedEndMinute, setSchedEndMinute] = useState(30);
+  const [schedDays, setSchedDays] = useState([1, 3]); // Mon/Wed default
+  const [schedColor, setSchedColor] = useState('teal');
+  const [schedValidationError, setSchedValidationError] = useState('');
+
+  const daysOfWeek = [
+    { label: 'S', value: 0, fullName: 'Sunday' },
+    { label: 'M', value: 1, fullName: 'Monday' },
+    { label: 'T', value: 2, fullName: 'Tuesday' },
+    { label: 'W', value: 3, fullName: 'Wednesday' },
+    { label: 'T', value: 4, fullName: 'Thursday' },
+    { label: 'F', value: 5, fullName: 'Friday' },
+    { label: 'S', value: 6, fullName: 'Saturday' },
+  ];
 
   // Calculate percentages
   const progressPercent = Math.min(100, Math.round((data.todayStreak / data.dailyGoal) * 100));
@@ -43,7 +65,7 @@ export default function DashboardHome({ data, setData, onNavigate }) {
 
   const handleStartLock = () => {
     if (lockMinutes < 30) {
-      return; // Validation blocks starting
+      return; // Enforce minimum 30 min duration
     }
     setIsLocking(false);
     setActiveTimer(true);
@@ -66,6 +88,81 @@ export default function DashboardHome({ data, setData, onNavigate }) {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  const formatTime12h = (h, m) => {
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const displayH = h % 12 === 0 ? 12 : h % 12;
+    const displayM = m < 10 ? `0${m}` : m;
+    return `${displayH}:${displayM} ${ampm}`;
+  };
+
+  // Schedule Grid Operations
+  const handleToggleSchedule = (id) => {
+    setSchedules(prev => prev.map(s => {
+      if (s.id === id) {
+        return { ...s, active: !s.active };
+      }
+      return s;
+    }));
+  };
+
+  const handleDeleteSchedule = (id) => {
+    if (window.confirm("Delete this scheduled lock period?")) {
+      setSchedules(prev => prev.filter(s => s.id !== id));
+    }
+  };
+
+  const handleDaySelect = (dayVal) => {
+    if (schedDays.includes(dayVal)) {
+      setSchedDays(prev => prev.filter(d => d !== dayVal));
+    } else {
+      setSchedDays(prev => [...prev, dayVal]);
+    }
+  };
+
+  const handleAddSchedule = (e) => {
+    e.preventDefault();
+    if (!schedTitle.trim()) return alert("Please enter a title");
+    if (schedDays.length === 0) return alert("Select at least one day");
+
+    // Calculate duration in minutes
+    const startTotal = parseInt(schedStartHour) * 60 + parseInt(schedStartMinute);
+    const endTotal = parseInt(schedEndHour) * 60 + parseInt(schedEndMinute);
+    let duration = endTotal - startTotal;
+    if (duration <= 0) {
+      duration += 24 * 60; // Spans overnight
+    }
+
+    if (duration < 30) {
+      setSchedValidationError("Minimum lock duration is 30 minutes.");
+      return;
+    }
+
+    setSchedValidationError("");
+
+    const newSchedule = {
+      id: Date.now(),
+      title: schedTitle,
+      days: schedDays,
+      startHour: parseInt(schedStartHour),
+      startMinute: parseInt(schedStartMinute),
+      endHour: parseInt(schedEndHour),
+      endMinute: parseInt(schedEndMinute),
+      color: schedColor,
+      active: true,
+    };
+
+    setSchedules(prev => [...prev, newSchedule]);
+    
+    // Reset Form
+    setSchedTitle('');
+    setSchedDays([1, 3]);
+    setSchedStartHour(9);
+    setSchedStartMinute(0);
+    setSchedEndHour(9);
+    setSchedEndMinute(30);
+    setIsAddingSchedule(false);
   };
 
   // SVG parameters for Circular Progress Ring
@@ -199,7 +296,7 @@ export default function DashboardHome({ data, setData, onNavigate }) {
       {!activeTimer ? (
         <button
           onClick={() => setIsLocking(true)}
-          className="w-full py-4 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold flex items-center justify-center gap-2 group transition-all duration-300 shadow-lg glow-teal border border-teal-300/20"
+          className="w-full py-4 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold flex items-center justify-center gap-2 group transition-all duration-300 shadow-lg glow-teal border border-teal-300/20 cursor-pointer"
         >
           <Lock size={16} className="transition-transform group-hover:rotate-6" />
           <span>Lock Phone in Box</span>
@@ -236,19 +333,76 @@ export default function DashboardHome({ data, setData, onNavigate }) {
         </div>
       )}
 
-      {/* Lock Schedule Widget Preview Link */}
-      <div 
-        onClick={() => onNavigate('schedule')}
-        className="p-4 rounded-2xl glass-card flex justify-between items-center cursor-pointer select-none group border-dashed hover:border-teal-500/30"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-teal-400"></div>
-          <div>
-            <p className="text-xs font-semibold text-slate-300">Deep Sleep Schedule</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">Starts tonight at 10:00 PM</p>
-          </div>
+      {/* Lock Schedules Merged Section */}
+      <div className="flex flex-col gap-3.5 mt-1 pb-4">
+        <div className="flex justify-between items-center px-1">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+            <Calendar size={14} className="text-teal-400" />
+            <span>Lock Schedules</span>
+          </h3>
+          <button
+            onClick={() => setIsAddingSchedule(true)}
+            className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20 hover:bg-teal-500/20 transition-all flex items-center justify-center gap-1 text-[10px] font-extrabold uppercase cursor-pointer"
+          >
+            <Plus size={12} />
+            <span>Add</span>
+          </button>
         </div>
-        <ChevronRight size={16} className="text-slate-600 transition-transform group-hover:translate-x-1 group-hover:text-teal-400" />
+
+        {/* List of Schedules */}
+        <div className="flex flex-col gap-2.5">
+          {schedules.map((schedule) => (
+            <div
+              key={schedule.id}
+              className={`p-3.5 rounded-2xl flex justify-between items-center transition-all ${
+                schedule.active 
+                  ? 'border-l-4 border-l-teal-400 bg-slate-900/40 border-slate-800/80 shadow-md' 
+                  : 'opacity-60 border-l-4 border-l-slate-700 bg-slate-900/20 border-slate-900/60'
+              } border`}
+            >
+              <div className="flex flex-col gap-0.5 pr-2 max-w-[210px] truncate text-left">
+                <span className="text-xs font-bold text-slate-200 block truncate">{schedule.title}</span>
+                <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium mt-1">
+                  <Clock size={11} className="text-slate-500" />
+                  <span>
+                    {formatTime12h(schedule.startHour, schedule.startMinute)} - {formatTime12h(schedule.endHour, schedule.endMinute)}
+                  </span>
+                </span>
+                <span className="text-[8px] text-slate-500 font-extrabold uppercase tracking-wider block mt-1.5">
+                  {schedule.days.length === 7 
+                    ? 'Daily' 
+                    : schedule.days.map(d => daysOfWeek.find(day => day.value === d).label).join(', ')
+                  }
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handleToggleSchedule(schedule.id)}
+                  className="text-slate-450 hover:text-teal-400 transition-colors cursor-pointer"
+                >
+                  {schedule.active ? (
+                    <ToggleRight size={26} className="text-teal-400" />
+                  ) : (
+                    <ToggleLeft size={26} className="text-slate-600" />
+                  )}
+                </button>
+                <button 
+                  onClick={() => handleDeleteSchedule(schedule.id)}
+                  className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-colors cursor-pointer"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            </div>
+          ))}
+          
+          {schedules.length === 0 && (
+            <div className="text-center py-8 border border-dashed border-slate-800/60 rounded-2xl text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+              No schedules active.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Lock Duration Selector Overlay (Modal Drawer) */}
@@ -259,7 +413,7 @@ export default function DashboardHome({ data, setData, onNavigate }) {
               <h3 className="text-base font-bold font-display text-white">Detox Lock Duration</h3>
               <button 
                 onClick={() => setIsLocking(false)}
-                className="p-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 transition-colors"
+                className="p-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -275,7 +429,7 @@ export default function DashboardHome({ data, setData, onNavigate }) {
                 <button
                   key={m}
                   onClick={() => setLockMinutes(m)}
-                  className={`py-3 rounded-xl border text-sm font-bold transition-all ${
+                  className={`py-3 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
                     lockMinutes === m
                       ? 'border-teal-400 bg-teal-500/10 text-teal-400 shadow-md'
                       : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
@@ -313,7 +467,7 @@ export default function DashboardHome({ data, setData, onNavigate }) {
             <button
               onClick={handleStartLock}
               disabled={lockMinutes < 30}
-              className={`w-full py-3.5 mt-1.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all ${
+              className={`w-full py-3.5 mt-1.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
                 lockMinutes < 30
                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
                   : 'bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 hover:shadow-teal-500/20'
@@ -323,6 +477,160 @@ export default function DashboardHome({ data, setData, onNavigate }) {
               <span>Lock Now for {lockMinutes} Min</span>
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Add Schedule Form Drawer Modal */}
+      {isAddingSchedule && (
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col justify-end p-5 animate-fade-in rounded-[42px]">
+          <form onSubmit={handleAddSchedule} className="bg-[#0f121e] rounded-3xl p-5 border border-slate-800/80 shadow-2xl flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-base font-bold font-display text-white">Add Lock Period</h3>
+              <button 
+                type="button"
+                onClick={() => setIsAddingSchedule(false)}
+                className="p-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Title */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Event Name</label>
+              <input
+                type="text"
+                placeholder="e.g. Study Hall, Lecture"
+                value={schedTitle}
+                onChange={(e) => setSchedTitle(e.target.value)}
+                required
+                className="bg-slate-900 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500/40"
+              />
+            </div>
+
+            {/* Time Pickers */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Start Time</label>
+                <div className="flex gap-1">
+                  <select 
+                    value={schedStartHour} 
+                    onChange={(e) => {
+                      setSchedStartHour(parseInt(e.target.value));
+                      setSchedValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-350 w-1/2 focus:outline-none"
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => (
+                      <option key={h} value={h}>{h < 10 ? `0${h}` : h}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={schedStartMinute} 
+                    onChange={(e) => {
+                      setSchedStartMinute(parseInt(e.target.value));
+                      setSchedValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-350 w-1/2 focus:outline-none"
+                  >
+                    {[0, 15, 30, 45].map((m) => (
+                      <option key={m} value={m}>{m < 10 ? `0${m}` : m}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">End Time</label>
+                <div className="flex gap-1">
+                  <select 
+                    value={schedEndHour} 
+                    onChange={(e) => {
+                      setSchedEndHour(parseInt(e.target.value));
+                      setSchedValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-350 w-1/2 focus:outline-none"
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => (
+                      <option key={h} value={h}>{h < 10 ? `0${h}` : h}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={schedEndMinute} 
+                    onChange={(e) => {
+                      setSchedEndMinute(parseInt(e.target.value));
+                      setSchedValidationError("");
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-1.5 px-2 text-xs text-slate-350 w-1/2 focus:outline-none"
+                  >
+                    {[0, 15, 30, 45].map((m) => (
+                      <option key={m} value={m}>{m < 10 ? `0${m}` : m}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Days selector */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Repeat Days</label>
+              <div className="flex gap-1 justify-between">
+                {daysOfWeek.map((day) => {
+                  const selected = schedDays.includes(day.value);
+                  return (
+                    <button
+                      key={day.value}
+                      type="button"
+                      onClick={() => handleDaySelect(day.value)}
+                      className={`w-8 h-8 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                        selected 
+                          ? 'border-teal-400 bg-teal-500/10 text-teal-400' 
+                          : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      {day.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Theme Select */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Color Accent</label>
+              <div className="flex gap-3">
+                {['teal', 'blue', 'purple'].map((theme) => (
+                  <button
+                    key={theme}
+                    type="button"
+                    onClick={() => setSchedColor(theme)}
+                    className={`w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
+                      theme === 'teal' ? 'bg-teal-500' : theme === 'blue' ? 'bg-cyan-500' : 'bg-indigo-500'
+                    } ${
+                      schedColor === theme 
+                        ? 'border-white scale-110 shadow-lg' 
+                        : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Validation Error Banner */}
+            {schedValidationError && (
+              <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-wider text-center animate-pulse">
+                ⚠️ {schedValidationError}
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold flex items-center justify-center gap-1.5 shadow-lg hover:shadow-teal-500/20 cursor-pointer"
+            >
+              <Plus size={14} />
+              <span>Create Schedule</span>
+            </button>
+          </form>
         </div>
       )}
 
