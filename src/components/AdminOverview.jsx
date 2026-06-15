@@ -52,19 +52,6 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      {/* Privacy Guard Callout Card */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-teal-500/10 to-transparent border border-teal-500/25 flex gap-3.5 items-start relative overflow-hidden select-none glow-teal/5">
-        <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center border border-teal-500/20 shrink-0">
-          <ShieldCheck size={20} />
-        </div>
-        <div>
-          <h4 className="text-xs font-extrabold text-teal-400 uppercase tracking-wide">Privacy Shield Enabled</h4>
-          <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-            In compliance with campus privacy standards, the system restricts visibility of active student screen content or unlock details. You can view **daily cumulative lock times** and aggregate distraction rates only.
-          </p>
-        </div>
-      </div>
-
       {/* Student Lock Durations Directory */}
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-center">
@@ -133,6 +120,19 @@ export default function AdminOverview() {
               No student records found matching "{searchQuery}"
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Privacy Guard Callout Card */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-teal-500/10 to-transparent border border-teal-500/25 flex gap-3.5 items-start relative overflow-hidden select-none glow-teal/5">
+        <div className="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center border border-teal-500/20 shrink-0">
+          <ShieldCheck size={20} />
+        </div>
+        <div>
+          <h4 className="text-xs font-extrabold text-teal-400 uppercase tracking-wide">Privacy Shield Enabled</h4>
+          <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
+            In compliance with campus privacy standards, the system restricts visibility of active student screen content or unlock details. You can view **daily cumulative lock times** and aggregate distraction rates only.
+          </p>
         </div>
       </div>
 
