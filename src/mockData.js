@@ -31,7 +31,7 @@ export const weeklyTrendData = [
 export const leaderboardUsers = [
   { rank: 1, name: "Rohan Gupta", hostel: "Bhabha Hall (A)", hours: 53.5, avatar: "👨‍💻", isCurrentUser: false },
   { rank: 2, name: "Emily Chen", hostel: "Curie Hall (C)", hours: 49.5, avatar: "👩‍🔬", isCurrentUser: false },
-  { rank: 3, name: "Alex Carter", hostel: "Ramanujan Hall (B)", hours: 47.7, avatar: "⚡", isCurrentUser: true }, // Current User
+  { rank: 3, name: "Student", hostel: "Ramanujan Hall (B)", hours: 47.7, avatar: "⚡", isCurrentUser: true }, // Current User
   { rank: 4, name: "Kabir Sharma", hostel: "Bhabha Hall (A)", hours: 44.0, avatar: "🎮", isCurrentUser: false },
   { rank: 5, name: "Priya Patel", hostel: "Curie Hall (D)", hours: 41.5, avatar: "🌿", isCurrentUser: false },
   { rank: 6, name: "Jessica Taylor", hostel: "Ramanujan Hall (B)", hours: 39.0, avatar: "🎨", isCurrentUser: false },
@@ -121,47 +121,139 @@ export const initialSecurityLogs = [
 export const initialRewards = [
   {
     id: 101,
-    title: "Amazon ₹50 Voucher",
+    title: "Free Coffee - Campus Canteen",
     condition: "Complete daily streak of 8h",
     status: "unlocked",
     scratched: false,
-    code: "AMZ-DETOX-50A",
-    icon: "🛒",
+    code: "CANTEEN-BREW-8H",
+    icon: "☕",
   },
   {
     id: 102,
-    title: "Zomato 20% Off",
+    title: "20% Off - Library Cafe",
     condition: "Complete 5-day streak",
     status: "locked",
     scratched: false,
-    code: "ZOMATO-DETOX-20",
-    icon: "🍔",
+    code: "LIBCONT-DETOX-20",
+    icon: "🥪",
   },
   {
     id: 103,
-    title: "Spotify 1 Month Premium",
+    title: "₹100 Campus Bookstore Voucher",
     condition: "Accumulate 30 hours locked",
     status: "locked",
     scratched: false,
-    code: "SPOT-FREE-DETOX",
-    icon: "🎵",
+    code: "BOOKSTORE-STUDY-100",
+    icon: "📚",
   },
   {
     id: 104,
-    title: "₹100 BookMyShow Gift Card",
+    title: "Free Lunch - Hostel Mess",
     condition: "Lock phone for 9.5 hours on Saturday",
     status: "unlocked",
     scratched: false,
-    code: "BMS-DETOX-WEEKEND",
-    icon: "🎬",
+    code: "MESS-DETOX-SAT",
+    icon: "🍛",
   },
   {
     id: 105,
-    title: "Starbucks Free Brew",
+    title: "Free Fruit Shake - Campus Juices",
     condition: "Rank #1 on Hostel Leaderboard",
     status: "locked",
     scratched: false,
-    code: "STARBUCKS-CHAMP",
-    icon: "☕",
+    code: "JUICES-BAR-CHAMP",
+    icon: "🥤",
   },
 ];
+
+export const adminClassStats = [
+  {
+    id: 1,
+    name: "CS-301: Algorithms & Data Structures",
+    time: "10:00 AM - 11:30 AM",
+    enrolled: 45,
+    locked: 41,
+    unlocks: 2,
+    instructor: "Dr. A. Verma",
+    status: "ongoing"
+  },
+  {
+    id: 2,
+    name: "EE-201: Network Systems & Analysis",
+    time: "12:00 PM - 01:30 PM",
+    enrolled: 50,
+    locked: 38,
+    unlocks: 14,
+    instructor: "Prof. S. Sen",
+    status: "completed"
+  },
+  {
+    id: 3,
+    name: "PH-101: Engineering Physics Lab",
+    time: "02:00 PM - 04:30 PM",
+    enrolled: 30,
+    locked: 29,
+    unlocks: 1,
+    instructor: "Dr. M. Roy",
+    status: "completed"
+  },
+  {
+    id: 4,
+    name: "ME-102: Workshop & Design Practice",
+    time: "04:30 PM - 06:00 PM",
+    enrolled: 40,
+    locked: 32,
+    unlocks: 9,
+    instructor: "Prof. K. Das",
+    status: "completed"
+  }
+];
+
+export const adminHallsStats = [
+  { hall: "Bhabha Hall (A)", avgLockHours: 7.2, focusedStudents: 68, distractionRate: 12 },
+  { hall: "Ramanujan Hall (B)", avgLockHours: 6.8, focusedStudents: 55, distractionRate: 18 },
+  { hall: "Curie Hall (C)", avgLockHours: 8.1, focusedStudents: 84, distractionRate: 8 },
+  { hall: "Bose Hall (D)", avgLockHours: 5.9, focusedStudents: 42, distractionRate: 24 }
+];
+
+export const adminStudentLockStats = [
+  { id: 1001, name: "Rohan Gupta", hostel: "Bhabha Hall (A)", lockTimeToday: "7.5 hrs", status: "Locked Now", activeStreak: "5 Days" },
+  { id: 1002, name: "Emily Chen", hostel: "Curie Hall (C)", lockTimeToday: "8.2 hrs", status: "Locked Now", activeStreak: "12 Days" },
+  { id: 1003, name: "Student", hostel: "Ramanujan Hall (B)", lockTimeToday: "6.8 hrs", status: "Unlocked (Study Period Over)", activeStreak: "3 Days" },
+  { id: 1004, name: "Kabir Sharma", hostel: "Bhabha Hall (A)", lockTimeToday: "5.4 hrs", status: "Locked Now", activeStreak: "0 Days" },
+  { id: 1005, name: "Priya Patel", hostel: "Curie Hall (D)", lockTimeToday: "8.0 hrs", status: "Locked Now", activeStreak: "7 Days" },
+  { id: 1006, name: "Jessica Taylor", hostel: "Ramanujan Hall (B)", lockTimeToday: "4.2 hrs", status: "Unlocked (Distracted)", activeStreak: "2 Days" }
+];
+
+export const classStudentDetails = {
+  1: [
+    { name: "Student", status: "Locked", unlocks: 0 },
+    { name: "Rohan Gupta", status: "Locked", unlocks: 0 },
+    { name: "Emily Chen", status: "Locked", unlocks: 0 },
+    { name: "Jessica Taylor", status: "Unlocked", unlocks: 1 },
+    { name: "Kabir Sharma", status: "Unlocked", unlocks: 1 },
+    { name: "Priya Patel", status: "Locked", unlocks: 0 }
+  ],
+  2: [
+    { name: "Student", status: "Unlocked", unlocks: 3 },
+    { name: "Rohan Gupta", status: "Unlocked", unlocks: 2 },
+    { name: "Emily Chen", status: "Locked", unlocks: 0 },
+    { name: "Kabir Sharma", status: "Unlocked", unlocks: 4 },
+    { name: "Marcus Vance", status: "Unlocked", unlocks: 5 },
+    { name: "David Kim", status: "Locked", unlocks: 0 }
+  ],
+  3: [
+    { name: "Student", status: "Locked", unlocks: 0 },
+    { name: "Emily Chen", status: "Locked", unlocks: 0 },
+    { name: "Priya Patel", status: "Unlocked", unlocks: 1 },
+    { name: "Rohan Gupta", status: "Locked", unlocks: 0 },
+    { name: "Jessica Taylor", status: "Locked", unlocks: 0 }
+  ],
+  4: [
+    { name: "Student", status: "Unlocked", unlocks: 2 },
+    { name: "Kabir Sharma", status: "Unlocked", unlocks: 3 },
+    { name: "David Kim", status: "Unlocked", unlocks: 4 },
+    { name: "Rohan Gupta", status: "Locked", unlocks: 0 },
+    { name: "Priya Patel", status: "Locked", unlocks: 0 }
+  ]
+};

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Home, BarChart2, Trophy, Shield, Wifi, Battery, Signal } from 'lucide-react';
+import { Home, BarChart2, Trophy, Shield, Wifi, Battery, Signal, LayoutDashboard, BookOpen, Building2, LogOut } from 'lucide-react';
 
-export default function PhoneMockup({ currentTab, setCurrentTab, children, notificationCount }) {
+export default function PhoneMockup({ role, setRole, isLoggedIn, onLogout, currentTab, setCurrentTab, children, notificationCount }) {
   const [time, setTime] = useState("");
 
   useEffect(() => {
@@ -20,7 +20,11 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
     return () => clearInterval(interval);
   }, []);
 
-  const navItems = [
+  const navItems = role === 'admin' ? [
+    { id: 'admin_overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'admin_classes', label: 'Classes', icon: BookOpen },
+    { id: 'admin_halls', label: 'Halls', icon: Building2 },
+  ] : [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'analytics', label: 'Stats', icon: BarChart2 },
     { id: 'leaderboard', label: 'Rank', icon: Trophy },
@@ -44,7 +48,7 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
         </div>
 
         {/* Status Bar */}
-        <div className="h-12 px-6 pt-3 flex justify-between items-center text-xs font-semibold text-slate-400 select-none z-40 bg-[#090b11]/80 backdrop-blur-md">
+        <div className="h-12 px-6 pt-3 flex justify-between items-center text-xs font-semibold text-slate-400 select-none z-40 bg-[#090b11]/80 backdrop-blur-md shrink-0">
           <span className="text-[11px] font-medium tracking-tight mt-1">{time || "11:21 PM"}</span>
           <div className="flex items-center gap-1.5 mt-1">
             <Signal size={12} className="text-slate-400" />
@@ -53,48 +57,87 @@ export default function PhoneMockup({ currentTab, setCurrentTab, children, notif
           </div>
         </div>
 
+        {/* Session Header with Logout */}
+        {isLoggedIn && (
+          <div className="px-5 py-2.5 bg-slate-950/60 backdrop-blur-md border-b border-slate-900/80 flex justify-between items-center z-40 shrink-0 select-none">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full animate-pulse ${role === 'admin' ? 'bg-purple-400' : 'bg-teal-400'}`}></span>
+              <span className="text-[10px] font-bold text-slate-350 tracking-wide">
+                {role === 'admin' ? 'Campus Admin' : 'Student'}
+              </span>
+              <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border leading-none ${
+                role === 'admin' 
+                  ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' 
+                  : 'bg-teal-500/10 text-teal-400 border-teal-500/20'
+              }`}>
+                {role === 'admin' ? 'Admin' : 'Student'}
+              </span>
+            </div>
+            
+            <button 
+              onClick={onLogout}
+              className="flex items-center gap-1 text-[9px] font-black text-slate-500 hover:text-red-400 transition-colors uppercase cursor-pointer select-none py-1 px-2 rounded-md hover:bg-slate-900 border border-transparent hover:border-slate-800"
+            >
+              <LogOut size={12} />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        )}
+
         {/* Main Viewport Content Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#090b11] pb-24 relative flex flex-col">
           {children}
         </div>
 
         {/* Premium Glassmorphic Bottom Navigation Bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-[84px] bg-[#090b11]/80 backdrop-blur-xl border-t border-slate-800/60 px-4 pt-2 pb-6 flex justify-around items-center z-40">
-          {navItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = currentTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setCurrentTab(item.id)}
-                className={`relative flex flex-col items-center justify-center w-14 h-12 rounded-xl transition-all duration-300 ${
-                  isActive 
-                    ? 'text-teal-400 scale-105' 
-                    : 'text-slate-500 hover:text-slate-300'
-                }`}
-              >
-                <div className={`p-1 rounded-lg transition-colors ${
-                  isActive ? 'bg-teal-500/10 text-teal-400' : 'bg-transparent'
-                }`}>
-                  <IconComponent size={20} strokeWidth={isActive ? 2.2 : 1.8} />
-                </div>
-                <span className="text-[9px] font-medium mt-1 tracking-wider">{item.label}</span>
-                
-                {/* Notification/Alert Badge */}
-                {item.badge > 0 && (
-                  <span className="absolute top-1 right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full min-w-3.5 h-3.5 flex items-center justify-center shadow-lg border border-[#090b11]">
-                    {item.badge}
-                  </span>
-                )}
-                
-                {/* Active Indicator Bar */}
-                {isActive && (
-                  <span className="absolute -bottom-1 w-5 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full glow-teal"></span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {isLoggedIn && (
+          <div className="absolute bottom-0 left-0 right-0 h-[84px] bg-[#090b11]/80 backdrop-blur-xl border-t border-slate-800/60 px-4 pt-2 pb-6 flex justify-around items-center z-40">
+            {navItems.map((item) => {
+              const IconComponent = item.icon;
+              const isActive = currentTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setCurrentTab(item.id)}
+                  className={`relative flex flex-col items-center justify-center w-14 h-12 rounded-xl transition-all duration-300 cursor-pointer ${
+                    isActive 
+                      ? role === 'admin' 
+                        ? 'text-purple-400 scale-105' 
+                        : 'text-teal-400 scale-105' 
+                      : 'text-slate-500 hover:text-slate-350'
+                  }`}
+                >
+                  <div className={`p-1 rounded-lg transition-colors ${
+                    isActive 
+                      ? role === 'admin' 
+                        ? 'bg-purple-500/10 text-purple-400' 
+                        : 'bg-teal-500/10 text-teal-400' 
+                      : 'bg-transparent'
+                  }`}>
+                    <IconComponent size={20} strokeWidth={isActive ? 2.2 : 1.8} />
+                  </div>
+                  <span className="text-[9px] font-medium mt-1 tracking-wider">{item.label}</span>
+                  
+                  {/* Notification/Alert Badge */}
+                  {item.badge > 0 && (
+                    <span className="absolute top-1 right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full min-w-3.5 h-3.5 flex items-center justify-center shadow-lg border border-[#090b11]">
+                      {item.badge}
+                    </span>
+                  )}
+                  
+                  {/* Active Indicator Bar */}
+                  {isActive && (
+                    <span className={`absolute -bottom-1 w-5 h-0.5 rounded-full ${
+                      role === 'admin'
+                        ? 'bg-gradient-to-r from-purple-400 to-indigo-400 shadow-[0_0_10px_rgba(168,85,247,0.45)]'
+                        : 'bg-gradient-to-r from-teal-400 to-cyan-400 glow-teal'
+                    }`}></span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Simulated iOS Home Indicator */}
         <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-700/60 rounded-full z-50"></div>
